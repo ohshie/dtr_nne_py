@@ -6,6 +6,7 @@ from datalayer.repositories.generic_repository import GenericRepository
 from models.domainmodels.newsoutlet import NewsOutlet
 from datalayer.unitofwork.unit_of_work import UnitOfWork
 
+
 class NewsOutletRepository(GenericRepository[NewsOutlet]):
     def __init__(self, uow: UnitOfWork):
         super().__init__(uow.session, NewsOutlet)
@@ -19,4 +20,3 @@ class NewsOutletRepository(GenericRepository[NewsOutlet]):
         except SQLAlchemyError as e:
             self.logger.error(f"Error updating entities: {str(e)}")
             return False
-

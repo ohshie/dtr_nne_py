@@ -3,7 +3,8 @@ from typing import Generic, TypeVar
 from sqlalchemy.exc import SQLAlchemyError
 from sqlalchemy.orm import Session
 
-T = TypeVar('T')
+T = TypeVar("T")
+
 
 class GenericRepository(Generic[T]):
     def __init__(self, session: Session, model: T):

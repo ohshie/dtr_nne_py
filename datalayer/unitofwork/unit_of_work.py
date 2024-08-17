@@ -1,6 +1,7 @@
 from sqlalchemy.orm import Session
 import logging
 
+
 class UnitOfWork:
     def __init__(self, session: Session):
         self.session = session
