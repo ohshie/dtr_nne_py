@@ -1,0 +1,21 @@
+[tool.poetry]
+name = "dtr-nne"
+version = "0.1.0"
+description = "News compiler for DTR"
+authors = ["stas <@ohshie>"]
+readme = "README.md"
+
+[tool.poetry.dependencies]
+python = "^3.9"
+fastapi = "^0.112.1"
+uvicorn = "^0.30.6"
+pytest-asyncio = "^0.23.8"
+sqlalchemy = "^2.0.32"
+alembic = "^1.13.2"
+
+[tool.poetry.group.dev.dependencies]
+pytest = "^8.3.2"
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
