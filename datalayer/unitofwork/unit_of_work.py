@@ -1,14 +1,15 @@
-from sqlalchemy.orm import Session
 import logging
+
+from datalayer.dbcontext.dbcontext import get_db_session
 
 
 class UnitOfWork:
-    def __init__(self, session: Session):
-        self.session = session
+    def __init__(self):
+        self.session = get_db_session()
         self.logger = logging.getLogger(self.__class__.__name__)
 
     async def __aenter__(self):
-        self.transaction = self.session.begin_nested()
+        self.transaction = self.session
         return self
 
     async def __aexit__(self, exc_type, exc_val, exc_tb):

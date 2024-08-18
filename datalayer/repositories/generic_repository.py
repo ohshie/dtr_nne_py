@@ -15,6 +15,9 @@ class GenericRepository(Generic[T]):
     async def get(self, id: int) -> T:
         return await self.session.query(self.model).filter(self.model.id == id).first()
 
+    async def get_all(self) -> list[T]:
+        return self.session.query(self.model).all()
+
     async def add(self, entity: T) -> bool:
         if entity is None:
             return False

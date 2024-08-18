@@ -73,9 +73,38 @@ def test_newsoutlet_DTO_mapper():
 
 
 @pytest.mark.asyncio
-async def test_add_newsoutlet_manager():
+async def test_add_newsoutlet_func_base():
     outlets_DTO = await add_new_outlet(test_outlets_DTO)
 
     assert isinstance(outlets_DTO, list)
     assert len(outlets_DTO) > 0
     assert all(isinstance(outlet, NewsOutletDTO) for outlet in outlets_DTO)
+
+
+@pytest.mark.asyncio
+async def test_add_newsoutlet_func_empty():
+    result = await add_new_outlet([])
+    assert result == []
+
+
+@pytest.mark.asyncio
+async def test_add_newsoutlet_func_duplicate():
+    duplicate_outlets = test_outlets_DTO + [test_outlets_DTO[0]]
+    result = await add_new_outlet(duplicate_outlets)
+
+    assert len(result) == len(test_outlets_DTO)
+
+
+@pytest.mark.asyncio
+async def test_add_newsoutlet_func_invalid():
+    invalid_outlet = NewsOutletDTO(
+        inUse=False,
+        alwaysJs=False,
+        name="invalid_outlet",
+        website="",
+        mainPageCss="",
+        newsPageCss="",
+    )
+    result = await add_new_outlet([invalid_outlet])
+
+    assert result == []

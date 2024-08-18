@@ -6,6 +6,14 @@ class Base(DeclarativeBase):
 
 
 class NewsOutlet(Base):
+    def __eq__(self, other):
+        if isinstance(other, NewsOutlet):
+            return self.website == other.website
+        return False
+
+    def __hash__(self):
+        return hash(self.website)
+
     __tablename__ = "NewsOutlets"
 
     id: Mapped[int] = mapped_column(primary_key=True, autoincrement=True)
