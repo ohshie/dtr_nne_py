@@ -1,6 +1,8 @@
 import logging
 
+from httpx import delete
 from sqlalchemy.exc import SQLAlchemyError
+from sqlalchemy import delete, update
 
 from datalayer.repositories.generic_repository import GenericRepository
 from models.domainmodels.newsoutlet import NewsOutlet
@@ -15,8 +17,18 @@ class NewsOutletRepository(GenericRepository[NewsOutlet]):
 
     async def batch_edit(self, entities: list[NewsOutlet]) -> bool:
         try:
-            self.session.merge(entities)
+            for entity in entities:
+                await self.session.merge(entity)
             return True
         except SQLAlchemyError as e:
             self.logger.error(f"Error updating entities: {str(e)}")
+            return False
+
+    async def clear_table(self):
+        try:
+            stmt = delete(NewsOutlet)
+            await self.session.execute(stmt)
+            return True
+        except SQLAlchemyError as e:
+            self.logger.error(f"Error clearing table: {str(e)}")
             return False

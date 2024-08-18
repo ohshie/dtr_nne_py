@@ -1,5 +1,5 @@
 from datalayer.repositories.newsoutlet_repository import NewsOutletRepository
-from helpers.duplicates_helper import filter_duplicates, find_uniques
+from helpers.duplicates_helper import filter_duplicates, find_uniques, find_similar
 from helpers.validity_helper import is_valid_outlet_object
 from mappers.newsoutlet_mapper import (
     map_newsoutlet_dto_to_domain,
@@ -21,14 +21,17 @@ async def add_new_outlet(outlets_dto: list[NewsOutletDTO]) -> list[NewsOutletDTO
 
         saved_outlets = await newsoutlet_repository.get_all()
         outlets_to_be_added = find_uniques(saved_outlets, prepared_outlets)
-        if len(outlets_to_be_added) > 0:
-            success = await newsoutlet_repository.batch_add(outlets_to_be_added)
-            if success is False:
-                logging.error("Failed to add outlets to database")
-                return []
-        else:
+
+        if len(outlets_to_be_added) < 1:
             logging.info("All incoming outlets already present in db")
             return []
+
+        success = await newsoutlet_repository.batch_add(outlets_to_be_added)
+        if success is False:
+            logging.error("Failed to add outlets to database")
+            return []
+
+        await uow.commit()
 
     added_outlets = outlets_to_be_added
 
@@ -44,6 +47,44 @@ async def add_new_outlet(outlets_dto: list[NewsOutletDTO]) -> list[NewsOutletDTO
 
 
 async def edit_existing_outlet(outlets_dto: list[NewsOutletDTO]) -> list[NewsOutletDTO]:
+    prepared_outlets = map_filter_verify_incoming(outlets_dto)
+    if prepared_outlets is []:
+        return []
+
+    async with UnitOfWork() as uow:
+        newsoutlet_repository = NewsOutletRepository(uow)
+        saved_outlets = await newsoutlet_repository.get_all()
+        outlets_to_be_edited = find_similar(saved_outlets, prepared_outlets)
+        if len(outlets_to_be_edited) < 1:
+            logging.error("Provided outlets do not exist")
+            return []
+
+        prepared_outlets_dict = {
+            outlet.website: {
+                "name": outlet.name,
+                "newsPageCss": outlet.newsPageCss,
+                "mainPageCss": outlet.mainPageCss,
+                "inUse": outlet.inUse,
+                "alwaysJs": outlet.alwaysJs,
+            }
+            for outlet in prepared_outlets
+        }
+
+        for outlet in outlets_to_be_edited:
+            if outlet.website in prepared_outlets_dict:
+                outlet_updates = prepared_outlets_dict[outlet.website]
+                for attr, value in outlet_updates.items():
+                    setattr(outlet, attr, value)
+
+        success = await newsoutlet_repository.batch_edit(outlets_to_be_edited)
+        if success is False:
+            logging.error("Failed to add outlets to database")
+            return []
+
+        await uow.commit()
+
+    mapped_edited_outlets_dto = map_domainoutlets_to_DTO(prepared_outlets)
+
     return mapped_edited_outlets_dto
 
 
@@ -76,7 +117,7 @@ def map_filter_verify_incoming(outlets_dto: list[NewsOutletDTO]) -> list[NewsOut
         )
         return []
     else:
-        logging.info("Passing verified outlets to Db")
+        logging.info("Passing verified outlets to unit of work")
 
     return verified_outlets
 

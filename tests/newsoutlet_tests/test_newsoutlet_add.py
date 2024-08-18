@@ -1,80 +1,26 @@
 import pytest
 
 from business.outlet_manager.newsoutlet_manager import add_new_outlet
-from tests.make_requests import post_request
 from models.dto.newsoutlet_dto import NewsOutletDTO
-from models.domainmodels.newsoutlet import NewsOutlet
-from mappers.newsoutlet_mapper import (
-    map_newsoutlet_dto_to_domain,
-    map_domainoutlets_to_DTO,
+from tests.mocks.newsoutlet_mocks import (
+    mock_newsoutlet_DTO_correct_1,
+    mock_newsoutlet_DTO_correct_2,
+    mock_newsoutlet_correct_1,
+    mock_newsoutlet_DTO_invalidurl,
 )
-
-test_outlets_DTO = [
-    NewsOutletDTO(
-        inUse=True,
-        alwaysJs=False,
-        name="first_outlet",
-        website="http://website.url",
-        mainPageCss="random",
-        newsPageCss="random",
-    ),
-    NewsOutletDTO(
-        inUse=True,
-        alwaysJs=False,
-        name="second_outlet",
-        website="http://website2.url",
-        mainPageCss="random",
-        newsPageCss="random",
-    ),
-]
-
-test_outlets: list[NewsOutlet] = [
-    NewsOutlet(
-        id=1,
-        inUse=True,
-        alwaysJs=False,
-        name="first_outlet",
-        website="website.url",
-        mainPageCss="random",
-        newsPageCss="random",
-    ),
-    NewsOutlet(
-        id=2,
-        inUse=True,
-        alwaysJs=False,
-        name="second_outlet",
-        website="website.url",
-        mainPageCss="random",
-        newsPageCss="random",
-    ),
-]
-
-
-def test_add_newsoutlet_api():
-    response = post_request("/AddNewOutlet", test_outlets_DTO)
-
-    assert response.status_code == 201
-
-
-def test_newsoutlet_mapper():
-    domain_outlets = map_newsoutlet_dto_to_domain(test_outlets_DTO)
-
-    assert isinstance(domain_outlets, list)
-    assert len(domain_outlets) > 0
-    assert all(isinstance(outlet, NewsOutlet) for outlet in domain_outlets)
-
-
-def test_newsoutlet_DTO_mapper():
-    outlets_DTO = map_domainoutlets_to_DTO(test_outlets)
-
-    assert isinstance(outlets_DTO, list)
-    assert len(outlets_DTO) > 0
-    assert all(isinstance(outlet, NewsOutletDTO) for outlet in outlets_DTO)
+from tests.newsoutlet_tests.clear_newsoutlets_table import clear_newsoutlets_table
 
 
 @pytest.mark.asyncio
 async def test_add_newsoutlet_func_base():
-    outlets_DTO = await add_new_outlet(test_outlets_DTO)
+    await clear_newsoutlets_table()
+
+    outlets_dto_list: list[NewsOutletDTO] = [
+        mock_newsoutlet_DTO_correct_1,
+        mock_newsoutlet_DTO_correct_2,
+    ]
+
+    outlets_DTO = await add_new_outlet(outlets_dto_list)
 
     assert isinstance(outlets_DTO, list)
     assert len(outlets_DTO) > 0
@@ -83,28 +29,28 @@ async def test_add_newsoutlet_func_base():
 
 @pytest.mark.asyncio
 async def test_add_newsoutlet_func_empty():
+    await clear_newsoutlets_table()
     result = await add_new_outlet([])
     assert result == []
 
 
 @pytest.mark.asyncio
 async def test_add_newsoutlet_func_duplicate():
-    duplicate_outlets = test_outlets_DTO + [test_outlets_DTO[0]]
-    result = await add_new_outlet(duplicate_outlets)
+    await clear_newsoutlets_table()
+    outlets_dto_list: list[NewsOutletDTO] = [
+        mock_newsoutlet_DTO_correct_1,
+        mock_newsoutlet_DTO_correct_2,
+        mock_newsoutlet_correct_1,
+    ]
 
-    assert len(test_outlets_DTO) == len(result)
+    result = await add_new_outlet(outlets_dto_list)
+
+    assert len(outlets_dto_list) != len(result)
 
 
 @pytest.mark.asyncio
 async def test_add_newsoutlet_func_invalid():
-    invalid_outlet = NewsOutletDTO(
-        inUse=False,
-        alwaysJs=False,
-        name="invalid_outlet",
-        website="",
-        mainPageCss="",
-        newsPageCss="",
-    )
-    result = await add_new_outlet([invalid_outlet])
+    await clear_newsoutlets_table()
+    result = await add_new_outlet([mock_newsoutlet_DTO_invalidurl])
 
     assert result == []

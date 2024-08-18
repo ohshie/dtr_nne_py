@@ -27,3 +27,16 @@ def find_uniques(
 
     ougoing_list = [item for item in set_2 if item not in set_1]
     return ougoing_list
+
+
+def find_similar(current_list: list[T], incoming_list: list[T]) -> list[T]:
+    """
+    :param current_list: Current list
+    :param incoming_list: Received list
+    :return: only values that are similar to received list
+    """
+    set_1 = set(current_list)
+    set_2 = set(incoming_list)
+
+    outgoing_list = [item for item in set_1 if item in set_2]
+    return outgoing_list

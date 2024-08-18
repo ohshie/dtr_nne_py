@@ -16,11 +16,11 @@
         </library>
       </libraries>
     </data-source>
-    <data-source source="LOCAL" name="dtr_nne [2]" uuid="e11f8a5c-21ad-4a9d-8311-c55c53f92a82">
+    <data-source source="LOCAL" name="dtr_nne [2]" uuid="0f399684-54f9-406f-bac1-80ccdbd10860">
       <driver-ref>sqlite.xerial</driver-ref>
       <synchronize>true</synchronize>
       <jdbc-driver>org.sqlite.JDBC</jdbc-driver>
-      <jdbc-url>jdbc:sqlite:$PROJECT_DIR$/tests/newsoutlet_tests/dtr_nne.db</jdbc-url>
+      <jdbc-url>jdbc:sqlite:$PROJECT_DIR$/tests/dtr_nne.db</jdbc-url>
       <working-dir>$ProjectFileDir$</working-dir>
       <libraries>
         <library>

@@ -1,5 +1,6 @@
+from __future__ import annotations
+
 import logging
-import re
 from typing import Generic, TypeVar
 
 from sqlalchemy.engine import Result
@@ -16,11 +17,8 @@ class GenericRepository(Generic[T]):
         self.model = model
         self.logger = logging.getLogger(self.__class__.__name__)
 
-    async def get(self, id: int) -> T:
-        query = select(self.model).filter(id == self.model.id)
-        result: Result = await self.session.execute(query)
-        entity = result.scalar().one_or_none()
-        return entity
+    async def get(self, entity_id: int) -> T | None:
+        return await self.session.get(self.model, entity_id)
 
     async def get_all(self) -> list[T]:
         query = select(self.model)

@@ -1,6 +1,4 @@
-import pytest
-
-from helpers.duplicates_helper import filter_duplicates, find_uniques
+from helpers.duplicates_helper import filter_duplicates, find_uniques, find_similar
 
 
 class RandomObject:
@@ -77,3 +75,25 @@ def test_filter_duplicates_with_one_item():
 def test_find_duplicates_with_one_item():
     assert find_uniques([1], [1]) == []
     assert find_uniques(["a"], ["a"]) == []
+
+
+def test_find_similar_with_integers():
+    assert find_similar([1], [1]) == [1]
+    assert find_similar([1, 2, 3], [1, 2]) == [1, 2]
+    assert find_similar([3, 4, 5], [1, 2]) == []
+
+
+def test_find_similar_with_strings():
+    assert find_similar(["abc", "bcd", "cde"], ["cde"]) == ["cde"]
+    assert find_similar(["abc", "abc", "cde"], ["abc", "abc"]) == ["abc"]
+    assert find_similar(["cde", "deg"], ["abc", "bcd"]) == []
+
+
+def test_find_similar_with_custom_objects():
+    obj1 = RandomObject(1)
+    obj2 = RandomObject(2)
+    obj3 = RandomObject(1)
+
+    assert find_similar([obj1, obj2], [obj3]) == [obj3]
+    assert find_similar([obj1, obj1, obj1], [obj3, obj2, obj1]) == [obj1]
+    assert find_similar([obj2, obj3], [obj1, obj3]) == [obj1]
