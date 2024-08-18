@@ -10,6 +10,16 @@ class NewsOutletDTO(BaseModel):
     def __hash__(self):
         return hash(self.website)
 
+    def to_dict(self):
+        return {
+            "name": self.name,
+            "website": self.website,
+            "mainPageCss": self.mainPageCss,
+            "newsPageCss": self.newsPageCss,
+            "inUse": self.inUse,
+            "alwaysJs": self.alwaysJs,
+        }
+
     inUse: bool
     alwaysJs: bool
     name: str

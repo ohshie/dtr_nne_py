@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 from datalayer.repositories.newsoutlet_repository import NewsOutletRepository
 from helpers.duplicates_helper import filter_duplicates, find_uniques, find_similar
 from helpers.validity_helper import is_valid_outlet_object
@@ -11,12 +13,28 @@ from models.dto.newsoutlet_dto import NewsOutletDTO
 import logging
 
 
+async def get_current_outlets() -> list[NewsOutletDTO] | None:
+    async with UnitOfWork() as uow:
+        await uow.lock_table("newsoutlets")
+        newsoutlet_repository = NewsOutletRepository(uow)
+
+        saved_outlets = await newsoutlet_repository.get_all()
+        if len(saved_outlets) < 1:
+            logging.info("No outlets currently saved in Db")
+            return None
+
+    mapped_saved_outlets = map_domainoutlets_to_DTO(saved_outlets)
+
+    return mapped_saved_outlets
+
+
 async def add_new_outlet(outlets_dto: list[NewsOutletDTO]) -> list[NewsOutletDTO]:
     prepared_outlets = map_filter_verify_incoming(outlets_dto, "add")
     if prepared_outlets is []:
         return []
 
     async with UnitOfWork() as uow:
+        await uow.lock_table("newsoutlets")
         newsoutlet_repository = NewsOutletRepository(uow)
 
         saved_outlets = await newsoutlet_repository.get_all()
@@ -52,6 +70,8 @@ async def edit_existing_outlet(outlets_dto: list[NewsOutletDTO]) -> list[NewsOut
         return []
 
     async with UnitOfWork() as uow:
+        await uow.lock_table("newsoutlets")
+
         newsoutlet_repository = NewsOutletRepository(uow)
         saved_outlets = await newsoutlet_repository.get_all()
         outlets_to_be_edited: list[NewsOutlet] = find_similar(
@@ -100,6 +120,8 @@ async def remove_existing_outlet(
         return []
 
     async with UnitOfWork() as uow:
+        await uow.lock_table("newsoutlets")
+
         newsoutlet_repository = NewsOutletRepository(uow)
         saved_outlets = await newsoutlet_repository.get_all()
         outlets_to_be_removed: list[NewsOutlet] = find_similar(

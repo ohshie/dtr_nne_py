@@ -8,22 +8,23 @@ from business.outlet_manager.newsoutlet_manager import (
 )
 from models.dto.newsoutlet_dto import NewsOutletDTO
 from tests.mocks.newsoutlet_mocks import (
-    mock_newsoutlet_DTO_correct_1,
-    mock_newsoutlet_DTO_correct_2,
-    mock_newsoutlet_DTO_invalidurl,
+    mock_newsoutlet_DTO_factory,
+    mock_newsoutlet_DTO_list_factory,
 )
 from tests.newsoutlet_tests.clear_newsoutlets_table import clear_newsoutlets_table
-
-mock_edited_outlet_DTO = copy.copy(mock_newsoutlet_DTO_correct_1)
-mock_edited_outlet_DTO.name = "changed name"
 
 
 @pytest.mark.asyncio
 async def test_edit_existing_outlet_base():
     await clear_newsoutlets_table()
-    await add_new_outlet([mock_newsoutlet_DTO_correct_1])
 
-    edited_outlet = await edit_existing_outlet([mock_edited_outlet_DTO])
+    mock_newsoutlet_DTO = mock_newsoutlet_DTO_factory()
+
+    await add_new_outlet([mock_newsoutlet_DTO])
+
+    mock_newsoutlet_DTO.name = "Changed name"
+
+    edited_outlet = await edit_existing_outlet([mock_newsoutlet_DTO])
 
     assert isinstance(edited_outlet, list)
     assert len(edited_outlet) == 1
@@ -43,7 +44,7 @@ async def test_edit_existing_outlet_empty():
 async def test_edit_existing_outlet_notfound():
     await clear_newsoutlets_table()
 
-    edited_outlet = await edit_existing_outlet([mock_newsoutlet_DTO_correct_1])
+    edited_outlet = await edit_existing_outlet([mock_newsoutlet_DTO_factory()])
 
     assert isinstance(edited_outlet, list)
     assert len(edited_outlet) == 0
@@ -52,10 +53,15 @@ async def test_edit_existing_outlet_notfound():
 @pytest.mark.asyncio
 async def test_edit_existing_outlet_duplicate():
     await clear_newsoutlets_table()
-    await add_new_outlet([mock_newsoutlet_DTO_correct_1, mock_newsoutlet_DTO_correct_2])
+
+    mock_newsoulet_DTO_list = mock_newsoutlet_DTO_list_factory(2)
+
+    await add_new_outlet(mock_newsoulet_DTO_list)
+
+    mock_newsoulet_DTO_list[0].name = "Changed name"
 
     edited_outlet = await edit_existing_outlet(
-        [mock_edited_outlet_DTO, mock_edited_outlet_DTO]
+        [mock_newsoulet_DTO_list[0], mock_newsoulet_DTO_list[0]]
     )
 
     assert isinstance(edited_outlet, list)
@@ -63,14 +69,16 @@ async def test_edit_existing_outlet_duplicate():
 
 
 @pytest.mark.asyncio
-async def test_edit_existing_outlet_duplicate_name():
+async def test_edit_existing_outlet_faulty():
     await clear_newsoutlets_table()
-    await add_new_outlet([mock_newsoutlet_DTO_correct_1])
 
-    faulty_mock_edited_outlet = copy.copy(mock_edited_outlet_DTO)
-    faulty_mock_edited_outlet.website = mock_newsoutlet_DTO_invalidurl.website
+    mock_newsoutlet_DTO = mock_newsoutlet_DTO_factory()
 
-    edited_outlet = await edit_existing_outlet([faulty_mock_edited_outlet])
+    await add_new_outlet([mock_newsoutlet_DTO])
+
+    mock_newsoutlet_DTO.website = "not url"
+
+    edited_outlet = await edit_existing_outlet([mock_newsoutlet_DTO])
 
     assert isinstance(edited_outlet, list)
     assert len(edited_outlet) == 0

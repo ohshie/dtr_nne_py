@@ -4,9 +4,8 @@ from mappers.newsoutlet_mapper import (
 )
 
 from tests.mocks.newsoutlet_mocks import (
-    mock_newsoutlet_DTO_correct_1,
-    mock_newsoutlet_DTO_correct_2,
-    mock_newsoutlet_DTO_invalidurl,
+    mock_newsoutlet_DTO_list_factory,
+    mock_newsoutlet_DTO_factory,
 )
 
 
@@ -18,12 +17,8 @@ def test_map_filter_verify_incoming_emptylist():
 
 
 def test_map_filter_verify_incoming_faultylist():
-    faulty_outlets = [
-        mock_newsoutlet_DTO_correct_1,
-        mock_newsoutlet_DTO_correct_2,
-        mock_newsoutlet_DTO_correct_1,
-        mock_newsoutlet_DTO_invalidurl,
-    ]
+    faulty_outlets = mock_newsoutlet_DTO_list_factory(2)
+    faulty_outlets.append(mock_newsoutlet_DTO_factory(correct=False))
 
     prepared_outlets = map_filter_verify_incoming(faulty_outlets, "test")
     assert isinstance(prepared_outlets, list)
