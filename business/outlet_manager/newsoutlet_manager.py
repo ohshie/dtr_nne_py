@@ -12,7 +12,7 @@ import logging
 
 
 async def add_new_outlet(outlets_dto: list[NewsOutletDTO]) -> list[NewsOutletDTO]:
-    prepared_outlets = map_filter_verify_incoming(outlets_dto)
+    prepared_outlets = map_filter_verify_incoming(outlets_dto, "add")
     if prepared_outlets is []:
         return []
 
@@ -47,14 +47,16 @@ async def add_new_outlet(outlets_dto: list[NewsOutletDTO]) -> list[NewsOutletDTO
 
 
 async def edit_existing_outlet(outlets_dto: list[NewsOutletDTO]) -> list[NewsOutletDTO]:
-    prepared_outlets = map_filter_verify_incoming(outlets_dto)
+    prepared_outlets = map_filter_verify_incoming(outlets_dto, "edit")
     if prepared_outlets is []:
         return []
 
     async with UnitOfWork() as uow:
         newsoutlet_repository = NewsOutletRepository(uow)
         saved_outlets = await newsoutlet_repository.get_all()
-        outlets_to_be_edited = find_similar(saved_outlets, prepared_outlets)
+        outlets_to_be_edited: list[NewsOutlet] = find_similar(
+            saved_outlets, prepared_outlets
+        )
         if len(outlets_to_be_edited) < 1:
             logging.error("Provided outlets do not exist")
             return []
@@ -72,6 +74,7 @@ async def edit_existing_outlet(outlets_dto: list[NewsOutletDTO]) -> list[NewsOut
 
         for outlet in outlets_to_be_edited:
             if outlet.website in prepared_outlets_dict:
+                logging.debug(f"Overriding {outlet.website} with new values")
                 outlet_updates = prepared_outlets_dict[outlet.website]
                 for attr, value in outlet_updates.items():
                     setattr(outlet, attr, value)
@@ -83,18 +86,55 @@ async def edit_existing_outlet(outlets_dto: list[NewsOutletDTO]) -> list[NewsOut
 
         await uow.commit()
 
-    mapped_edited_outlets_dto = map_domainoutlets_to_DTO(prepared_outlets)
+    logging.info(f"Edited {len(outlets_to_be_edited)} outlets, mapping them to DTO")
+    mapped_edited_outlets_dto = map_domainoutlets_to_DTO(outlets_to_be_edited)
 
     return mapped_edited_outlets_dto
 
 
-def map_filter_verify_incoming(outlets_dto: list[NewsOutletDTO]) -> list[NewsOutlet]:
+async def remove_existing_outlet(
+    outlets_dto: list[NewsOutletDTO],
+) -> list[NewsOutletDTO]:
+    prepared_outlets = map_filter_verify_incoming(outlets_dto, "remove")
+    if prepared_outlets is []:
+        return []
+
+    async with UnitOfWork() as uow:
+        newsoutlet_repository = NewsOutletRepository(uow)
+        saved_outlets = await newsoutlet_repository.get_all()
+        outlets_to_be_removed: list[NewsOutlet] = find_similar(
+            saved_outlets, prepared_outlets
+        )
+        if len(outlets_to_be_removed) < 1:
+            logging.error("Provided outlets do not exist")
+            return []
+
+        successfully_removed: list[NewsOutlet] = []
+        for outlet in outlets_to_be_removed:
+            success = await newsoutlet_repository.remove(outlet)
+            if success is False:
+                logging.error(f"Failed to remove outlet {outlet.website} from database")
+            successfully_removed.append(outlet)
+
+        await uow.commit()
+
+    logging.info(
+        f"Removed {len(successfully_removed)} outlets from DB. Mapping them to DTO"
+    )
+    mapped_removed_outlets_dto = map_domainoutlets_to_DTO(successfully_removed)
+
+    return mapped_removed_outlets_dto
+
+
+def map_filter_verify_incoming(
+    outlets_dto: list[NewsOutletDTO], operation: str
+) -> list[NewsOutlet]:
     if len(outlets_dto) < 1:
         logging.info("Received empty list of outlets dto. Returning empty list")
         return []
     else:
         logging.info(
-            f"Received {len(outlets_dto)} outlets to add. Starting to map DTO to Domain models"
+            f"Received {len(outlets_dto)} outlets to {operation}. Starting to map DTO to Domain models"
         )
 
     outlets_dto = filter_duplicates(outlets_dto)

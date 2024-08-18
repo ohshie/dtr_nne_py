@@ -17,7 +17,7 @@ def test_map_filter_verify_incoming_emptylist():
     assert len(prepared_outlets) == len([])
 
 
-def test_map_filter_verity_incoming_faultylist():
+def test_map_filter_verify_incoming_faultylist():
     faulty_outlets = [
         mock_newsoutlet_DTO_correct_1,
         mock_newsoutlet_DTO_correct_2,
@@ -25,6 +25,6 @@ def test_map_filter_verity_incoming_faultylist():
         mock_newsoutlet_DTO_invalidurl,
     ]
 
-    prepared_outlets = map_filter_verify_incoming(faulty_outlets)
+    prepared_outlets = map_filter_verify_incoming(faulty_outlets, "test")
     assert isinstance(prepared_outlets, list)
     assert len(prepared_outlets) < len(faulty_outlets)
