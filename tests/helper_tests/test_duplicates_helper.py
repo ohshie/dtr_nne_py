@@ -1,6 +1,6 @@
 import pytest
 
-from helpers.duplicates_manager import filter_duplicates, find_uniques
+from helpers.duplicates_helper import filter_duplicates, find_uniques
 
 
 class RandomObject:

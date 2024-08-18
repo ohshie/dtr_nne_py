@@ -2,3 +2,5 @@
 /key.pem
 /dtr_nne.db
 /tests/dtr_nne.db
+/core/config.py
+core/.env

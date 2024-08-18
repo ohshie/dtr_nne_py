@@ -1,22 +1,32 @@
 import logging
+import re
 from typing import Generic, TypeVar
+
+from sqlalchemy.engine import Result
+from sqlalchemy import select
 from sqlalchemy.exc import SQLAlchemyError
-from sqlalchemy.orm import Session
+from sqlalchemy.ext.asyncio import AsyncSession
 
 T = TypeVar("T")
 
 
 class GenericRepository(Generic[T]):
-    def __init__(self, session: Session, model: T):
+    def __init__(self, session: AsyncSession, model: T):
         self.session = session
         self.model = model
         self.logger = logging.getLogger(self.__class__.__name__)
 
     async def get(self, id: int) -> T:
-        return await self.session.query(self.model).filter(self.model.id == id).first()
+        query = select(self.model).filter(id == self.model.id)
+        result: Result = await self.session.execute(query)
+        entity = result.scalar().one_or_none()
+        return entity
 
     async def get_all(self) -> list[T]:
-        return self.session.query(self.model).all()
+        query = select(self.model)
+        result: Result = await self.session.execute(query)
+        entities = result.scalars().all()
+        return list(entities)
 
     async def add(self, entity: T) -> bool:
         if entity is None:
@@ -40,7 +50,7 @@ class GenericRepository(Generic[T]):
         if entity is None:
             return False
         try:
-            self.session.merge(entity)
+            await self.session.merge(entity)
             return True
         except SQLAlchemyError as e:
             self.logger.error(f"Error updating entity: {str(e)}")
@@ -50,7 +60,7 @@ class GenericRepository(Generic[T]):
         if entity is None:
             return False
         try:
-            self.session.delete(entity)
+            await self.session.delete(entity)
             return True
         except SQLAlchemyError as e:
             self.logger.error(f"Error removing entity: {str(e)}")

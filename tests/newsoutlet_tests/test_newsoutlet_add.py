@@ -1,7 +1,7 @@
 import pytest
 
 from business.outlet_manager.newsoutlet_manager import add_new_outlet
-from .make_requests import post_request
+from tests.make_requests import post_request
 from models.dto.newsoutlet_dto import NewsOutletDTO
 from models.domainmodels.newsoutlet import NewsOutlet
 from mappers.newsoutlet_mapper import (
@@ -14,7 +14,7 @@ test_outlets_DTO = [
         inUse=True,
         alwaysJs=False,
         name="first_outlet",
-        website="website.url",
+        website="http://website.url",
         mainPageCss="random",
         newsPageCss="random",
     ),
@@ -22,7 +22,7 @@ test_outlets_DTO = [
         inUse=True,
         alwaysJs=False,
         name="second_outlet",
-        website="website.url",
+        website="http://website2.url",
         mainPageCss="random",
         newsPageCss="random",
     ),
@@ -92,7 +92,7 @@ async def test_add_newsoutlet_func_duplicate():
     duplicate_outlets = test_outlets_DTO + [test_outlets_DTO[0]]
     result = await add_new_outlet(duplicate_outlets)
 
-    assert len(result) == len(test_outlets_DTO)
+    assert len(test_outlets_DTO) == len(result)
 
 
 @pytest.mark.asyncio
