@@ -1,5 +1,3 @@
-import copy
-
 import pytest
 
 from business.outlet_manager.newsoutlet_manager import (
@@ -11,12 +9,12 @@ from tests.mocks.newsoutlet_mocks import (
     mock_newsoutlet_DTO_factory,
     mock_newsoutlet_DTO_list_factory,
 )
-from tests.newsoutlet_tests.clear_newsoutlets_table import clear_newsoutlets_table
+from tests.clear_table import clear_table
 
 
 @pytest.mark.asyncio
 async def test_edit_existing_outlet_base():
-    await clear_newsoutlets_table()
+    await clear_table("newsoutlet")
 
     mock_newsoutlet_DTO = mock_newsoutlet_DTO_factory()
 
@@ -33,7 +31,7 @@ async def test_edit_existing_outlet_base():
 
 @pytest.mark.asyncio
 async def test_edit_existing_outlet_empty():
-    await clear_newsoutlets_table()
+    await clear_table("newsoutlet")
     edited_outlet = await edit_existing_outlet([])
 
     assert isinstance(edited_outlet, list)
@@ -42,7 +40,7 @@ async def test_edit_existing_outlet_empty():
 
 @pytest.mark.asyncio
 async def test_edit_existing_outlet_notfound():
-    await clear_newsoutlets_table()
+    await clear_table("newsoutlet")
 
     edited_outlet = await edit_existing_outlet([mock_newsoutlet_DTO_factory()])
 
@@ -52,7 +50,7 @@ async def test_edit_existing_outlet_notfound():
 
 @pytest.mark.asyncio
 async def test_edit_existing_outlet_duplicate():
-    await clear_newsoutlets_table()
+    await clear_table("newsoutlet")
 
     mock_newsoulet_DTO_list = mock_newsoutlet_DTO_list_factory(2)
 
@@ -70,7 +68,7 @@ async def test_edit_existing_outlet_duplicate():
 
 @pytest.mark.asyncio
 async def test_edit_existing_outlet_faulty():
-    await clear_newsoutlets_table()
+    await clear_table("newsoutlet")
 
     mock_newsoutlet_DTO = mock_newsoutlet_DTO_factory()
 

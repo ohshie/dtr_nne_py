@@ -4,7 +4,7 @@ import logging
 from typing import Generic, TypeVar
 
 from sqlalchemy.engine import Result
-from sqlalchemy import select
+from sqlalchemy import select, delete
 from sqlalchemy.exc import SQLAlchemyError
 from sqlalchemy.ext.asyncio import AsyncSession
 
@@ -62,4 +62,13 @@ class GenericRepository(Generic[T]):
             return True
         except SQLAlchemyError as e:
             self.logger.error(f"Error removing entity: {str(e)}")
+            return False
+
+    async def clear_table(self):
+        try:
+            stmt = delete(self.model)
+            await self.session.execute(stmt)
+            return True
+        except SQLAlchemyError as e:
+            self.logger.error(f"Error clearing table: {str(e)}")
             return False

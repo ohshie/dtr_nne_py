@@ -38,6 +38,7 @@ def mock_newsoutlet_factory(correct: bool = True) -> NewsOutlet:
         newsPageCss=fake.json(num_rows=2),
         mainPageCss=fake.json(num_rows=2),
         inUse=fake.boolean(),
+        alwaysJs=fake.boolean(),
     )
 
     if not correct:

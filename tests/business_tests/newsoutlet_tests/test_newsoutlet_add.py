@@ -6,12 +6,12 @@ from tests.mocks.newsoutlet_mocks import (
     mock_newsoutlet_DTO_list_factory,
     mock_newsoutlet_DTO_factory,
 )
-from tests.newsoutlet_tests.clear_newsoutlets_table import clear_newsoutlets_table
+from tests.clear_table import clear_table
 
 
 @pytest.mark.asyncio
 async def test_add_newsoutlet_func_base():
-    await clear_newsoutlets_table()
+    await clear_table("newsoutlet")
 
     outlets_dto_list: list[NewsOutletDTO] = mock_newsoutlet_DTO_list_factory(2)
 
@@ -24,14 +24,14 @@ async def test_add_newsoutlet_func_base():
 
 @pytest.mark.asyncio
 async def test_add_newsoutlet_func_empty():
-    await clear_newsoutlets_table()
+    await clear_table("newsoutlet")
     result = await add_new_outlet([])
     assert result == []
 
 
 @pytest.mark.asyncio
 async def test_add_newsoutlet_func_duplicate():
-    await clear_newsoutlets_table()
+    await clear_table("newsoutlet")
     outlets_dto_list: list[NewsOutletDTO] = mock_newsoutlet_DTO_list_factory(2)
     outlets_dto_list.append(outlets_dto_list[0])
 
@@ -42,7 +42,7 @@ async def test_add_newsoutlet_func_duplicate():
 
 @pytest.mark.asyncio
 async def test_add_newsoutlet_func_invalid():
-    await clear_newsoutlets_table()
+    await clear_table("newsoutlet")
     result = await add_new_outlet([mock_newsoutlet_DTO_factory(correct=False)])
 
     assert result == []

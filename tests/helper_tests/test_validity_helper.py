@@ -1,10 +1,9 @@
 from helpers.validity_helper import is_valid_str_field, is_valid_outlet_object
 from tests.mocks.newsoutlet_mocks import (
-    mock_newsoutlet_correct_1,
-    mock_newsoutlet_invalidurl,
     mock_newsoutlet_emptyname,
     mock_newsoutlet_emptymainpagecss,
     mock_newsoutlet_emptynewspagecss,
+    mock_newsoutlet_factory,
 )
 
 
@@ -20,8 +19,8 @@ def test_is_valid_str_field():
 
 
 def test_is_valid_outlet_object():
-    assert is_valid_outlet_object(mock_newsoutlet_correct_1) == True
+    assert is_valid_outlet_object(mock_newsoutlet_factory()) == True
     assert is_valid_outlet_object(mock_newsoutlet_emptyname) == False
-    assert is_valid_outlet_object(mock_newsoutlet_invalidurl) == False
+    assert is_valid_outlet_object(mock_newsoutlet_factory(correct=False)) == False
     assert is_valid_outlet_object(mock_newsoutlet_emptymainpagecss) == False
     assert is_valid_outlet_object(mock_newsoutlet_emptynewspagecss) == False

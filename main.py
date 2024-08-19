@@ -1,4 +1,3 @@
-from fastapi.openapi.models import SecurityScheme, SecuritySchemeType
 from fastapi.openapi.utils import get_openapi
 
 from controllers.newsoutlet_controller import router as helloworld_router

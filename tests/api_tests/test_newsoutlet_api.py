@@ -9,12 +9,12 @@ from tests.mocks.newsoutlet_mocks import (
     mock_newsoutlet_DTO_factory,
     mock_newsoutlet_DTO_list_factory,
 )
-from tests.newsoutlet_tests.clear_newsoutlets_table import clear_newsoutlets_table
+from tests.clear_table import clear_table
 
 
 @pytest.mark.asyncio
 async def test_get_newsoulet_api_base():
-    await clear_newsoutlets_table()
+    await clear_table("newsoutlet")
 
     mock_outlets_DTO_list = mock_newsoutlet_DTO_list_factory(2)
     await add_new_outlet(mock_outlets_DTO_list)
@@ -26,7 +26,7 @@ async def test_get_newsoulet_api_base():
 
 @pytest.mark.asyncio
 async def test_get_newsoulet_api_empty():
-    await clear_newsoutlets_table()
+    await clear_table("newsoutlet")
 
     response = get_request("/GetCurrentOutlets")
 
@@ -35,7 +35,7 @@ async def test_get_newsoulet_api_empty():
 
 @pytest.mark.asyncio
 async def test_add_newsoutlet_api_base():
-    await clear_newsoutlets_table()
+    await clear_table("newsoutlet")
 
     mock_outlets_DTO_list = mock_newsoutlet_DTO_list_factory(2)
 
@@ -63,7 +63,7 @@ async def test_add_newsoutlet_api_empty():
 
 @pytest.mark.asyncio
 async def test_add_newsoutlet_api_concurrency():
-    await clear_newsoutlets_table()
+    await clear_table("newsoutlet")
 
     payloads = [
         [mock_newsoutlet_DTO_factory(), mock_newsoutlet_DTO_factory()],
@@ -84,7 +84,7 @@ async def test_add_newsoutlet_api_concurrency():
 
 @pytest.mark.asyncio
 async def test_edit_newsoutlet_api_base():
-    await clear_newsoutlets_table()
+    await clear_table("newsoutlet")
 
     mock_newsoutlet_DTO_list: list[NewsOutletDTO] = mock_newsoutlet_DTO_list_factory(2)
 
@@ -99,7 +99,7 @@ async def test_edit_newsoutlet_api_base():
 
 @pytest.mark.asyncio
 async def test_edit_newsoutlet_api_faulty():
-    await clear_newsoutlets_table()
+    await clear_table("newsoutlet")
 
     mock_newsoutlet_DTO_list = mock_newsoutlet_DTO_list_factory(2)
 
@@ -114,7 +114,7 @@ async def test_edit_newsoutlet_api_faulty():
 
 @pytest.mark.asyncio
 async def test_edit_newsoutlet_api_empty():
-    await clear_newsoutlets_table()
+    await clear_table("newsoutlet")
 
     edited_outlets = put_request("/UpdateNewsOutlet", [mock_newsoutlet_DTO_factory()])
 
@@ -123,7 +123,7 @@ async def test_edit_newsoutlet_api_empty():
 
 @pytest.mark.asyncio
 async def test_delete_newsoutlet_api_base():
-    await clear_newsoutlets_table()
+    await clear_table("newsoutlet")
     mock_newsoutlet_DTO_list = mock_newsoutlet_DTO_list_factory(2)
     await add_new_outlet(mock_newsoutlet_DTO_list)
 
@@ -134,7 +134,7 @@ async def test_delete_newsoutlet_api_base():
 
 @pytest.mark.asyncio
 async def test_delete_newsoutlet_api_faulty():
-    await clear_newsoutlets_table()
+    await clear_table("newsoutlet")
     mock_newsoutlet_DTO_list = mock_newsoutlet_DTO_list_factory(2)
     await add_new_outlet(mock_newsoutlet_DTO_list)
 
@@ -147,7 +147,7 @@ async def test_delete_newsoutlet_api_faulty():
 
 @pytest.mark.asyncio
 async def test_delete_newsoutlet_api_empty():
-    await clear_newsoutlets_table()
+    await clear_table("newsoutlet")
 
     deleted_outlets = delete_request(
         "/DeleteNewsOutlet", [mock_newsoutlet_DTO_factory(2)]

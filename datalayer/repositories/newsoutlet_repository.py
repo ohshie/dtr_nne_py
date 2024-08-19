@@ -23,12 +23,3 @@ class NewsOutletRepository(GenericRepository[NewsOutlet]):
         except SQLAlchemyError as e:
             self.logger.error(f"Error updating entities: {str(e)}")
             return False
-
-    async def clear_table(self):
-        try:
-            stmt = delete(NewsOutlet)
-            await self.session.execute(stmt)
-            return True
-        except SQLAlchemyError as e:
-            self.logger.error(f"Error clearing table: {str(e)}")
-            return False
