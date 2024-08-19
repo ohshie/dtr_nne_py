@@ -2,7 +2,7 @@ import logging
 
 from httpx import delete
 from sqlalchemy.exc import SQLAlchemyError
-from sqlalchemy import delete, update
+from sqlalchemy import delete
 
 from datalayer.repositories.generic_repository import GenericRepository
 from models.domainmodels.newsoutlet import NewsOutlet

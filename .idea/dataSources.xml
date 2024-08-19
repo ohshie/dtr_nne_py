@@ -16,7 +16,7 @@
         </library>
       </libraries>
     </data-source>
-    <data-source source="LOCAL" name="dtr_nne [2]" uuid="0f399684-54f9-406f-bac1-80ccdbd10860">
+    <data-source source="LOCAL" name="dtr_nne test" uuid="7696db95-898d-434e-9eb5-893b3e11ad9f">
       <driver-ref>sqlite.xerial</driver-ref>
       <synchronize>true</synchronize>
       <jdbc-driver>org.sqlite.JDBC</jdbc-driver>

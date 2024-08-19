@@ -9,8 +9,10 @@ from core.config import settings
 def get_db_session():
     db_path = settings.prod_db_location
     if settings.python_env == "test":
-        if not os.path.exists(settings.debug_db_location):
-            source_db = os.path.abspath(settings.prod_db_location)
+        if not os.path.exists(settings.debug_db_location) or os.path.getatime(
+            settings.TEST_PROD_DB_LOCATION
+        ) > os.path.getmtime(settings.debug_db_location):
+            source_db = os.path.abspath(settings.TEST_PROD_DB_LOCATION)
             shutil.copy2(source_db, settings.debug_db_location)
         db_path = settings.debug_db_location
 
