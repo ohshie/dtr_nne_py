@@ -1,10 +1,12 @@
 import logging
+from typing import Generic
 
 from sqlalchemy import text
 from sqlalchemy.exc import OperationalError
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from datalayer.dbcontext.dbcontext import get_db_session
+from mappers.model_tablename_mapper import provide_tablename
 
 
 class UnitOfWork:
@@ -40,7 +42,9 @@ class UnitOfWork:
     def commited(self):
         return not self.session.is_active
 
-    async def lock_table(self, table_name: str, timeout: int = 10):
+    async def lock_table(self, table_name: Generic, timeout: int = 10):
+        table_name = provide_tablename(table_name)
+
         if table_name in self._locked_tables:
             return
 

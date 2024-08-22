@@ -4,6 +4,7 @@ from business.outlet_manager.newsoutlet_manager import (
     get_current_outlets,
     add_new_outlet,
 )
+from models.domainmodels.newsoutlet import NewsOutlet
 from models.dto.newsoutlet_dto import NewsOutletDTO
 from tests.mocks.newsoutlet_mocks import mock_newsoutlet_DTO_list_factory
 from tests.clear_table import clear_table
@@ -11,7 +12,7 @@ from tests.clear_table import clear_table
 
 @pytest.mark.asyncio
 async def test_get_newsoutlets_default():
-    await clear_table("newsoutlet")
+    await clear_table(NewsOutlet)
     await add_new_outlet(mock_newsoutlet_DTO_list_factory(2))
 
     current_outlets = await get_current_outlets()
@@ -23,7 +24,7 @@ async def test_get_newsoutlets_default():
 
 @pytest.mark.asyncio
 async def test_get_newsoutlets_empty():
-    await clear_table("newsoutlet")
+    await clear_table(NewsOutlet)
 
     current_outlets = await get_current_outlets()
 

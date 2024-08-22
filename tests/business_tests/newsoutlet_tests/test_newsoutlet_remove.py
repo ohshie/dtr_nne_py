@@ -6,6 +6,7 @@ from business.outlet_manager.newsoutlet_manager import (
     add_new_outlet,
     remove_existing_outlet,
 )
+from models.domainmodels.newsoutlet import NewsOutlet
 from tests.mocks.newsoutlet_mocks import (
     mock_newsoutlet_DTO_factory,
     mock_newsoutlet_DTO_list_factory,
@@ -15,7 +16,7 @@ from tests.clear_table import clear_table
 
 @pytest.mark.asyncio
 async def test_remove_newsoutlet_base():
-    await clear_table("newsoutlet")
+    await clear_table(NewsOutlet)
 
     mock_newsoutlet_DTO_list = mock_newsoutlet_DTO_list_factory(2)
     await add_new_outlet(mock_newsoutlet_DTO_list)
@@ -29,7 +30,7 @@ async def test_remove_newsoutlet_base():
 
 @pytest.mark.asyncio
 async def test_remove_newsoutlet_multiple():
-    await clear_table("newsoutlet")
+    await clear_table(NewsOutlet)
 
     mock_newsoutlet_DTO_list = mock_newsoutlet_DTO_list_factory(2)
     await add_new_outlet(mock_newsoutlet_DTO_list)
@@ -42,7 +43,7 @@ async def test_remove_newsoutlet_multiple():
 
 @pytest.mark.asyncio
 async def test_remove_newsoutlet_empty():
-    await clear_table("newsoutlet")
+    await clear_table(NewsOutlet)
     await add_new_outlet([mock_newsoutlet_DTO_factory()])
 
     removed_outlets = await remove_existing_outlet([])
@@ -53,7 +54,7 @@ async def test_remove_newsoutlet_empty():
 
 @pytest.mark.asyncio
 async def test_remove_newsoutlet_notfound():
-    await clear_table("newsoutlet")
+    await clear_table(NewsOutlet)
     await add_new_outlet([mock_newsoutlet_DTO_factory()])
 
     removed_outlets = await remove_existing_outlet([mock_newsoutlet_DTO_factory()])
@@ -64,7 +65,7 @@ async def test_remove_newsoutlet_notfound():
 
 @pytest.mark.asyncio
 async def test_remove_newsoutlet_duplicate():
-    await clear_table("newsoutlet")
+    await clear_table(NewsOutlet)
 
     mock_newsoutlet_DTO_list = mock_newsoutlet_DTO_list_factory(2)
 
@@ -81,7 +82,7 @@ async def test_remove_newsoutlet_duplicate():
 
 @pytest.mark.asyncio
 async def test_remove_newsoutlet_partial():
-    await clear_table("newsoutlet")
+    await clear_table(NewsOutlet)
 
     mock_newsoutlet_DTO_list = mock_newsoutlet_DTO_list_factory(2)
     await add_new_outlet([mock_newsoutlet_DTO_list[0]])
@@ -95,7 +96,7 @@ async def test_remove_newsoutlet_partial():
 
 @pytest.mark.asyncio
 async def test_remove_newsoutlet_invalid():
-    await clear_table("newsoutlet")
+    await clear_table(NewsOutlet)
 
     mock_newsoutlet_DTO = mock_newsoutlet_DTO_factory()
 
@@ -111,7 +112,7 @@ async def test_remove_newsoutlet_invalid():
 
 @pytest.mark.asyncio
 async def test_remove_newsoutlet_concurrency():
-    await clear_table("newsoutlet")
+    await clear_table(NewsOutlet)
 
     mock_newsoutlet_DTO_list = mock_newsoutlet_DTO_list_factory(2)
 

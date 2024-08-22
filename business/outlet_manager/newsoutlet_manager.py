@@ -15,7 +15,7 @@ import logging
 
 async def get_current_outlets() -> list[NewsOutletDTO] | None:
     async with UnitOfWork() as uow:
-        await uow.lock_table("newsoutlets")
+        await uow.lock_table(NewsOutlet)
         newsoutlet_repository = NewsOutletRepository(uow)
 
         saved_outlets = await newsoutlet_repository.get_all()
@@ -34,7 +34,7 @@ async def add_new_outlet(outlets_dto: list[NewsOutletDTO]) -> list[NewsOutletDTO
         return []
 
     async with UnitOfWork() as uow:
-        await uow.lock_table("newsoutlets")
+        await uow.lock_table(NewsOutlet)
         newsoutlet_repository = NewsOutletRepository(uow)
 
         saved_outlets = await newsoutlet_repository.get_all()
@@ -70,7 +70,7 @@ async def edit_existing_outlet(outlets_dto: list[NewsOutletDTO]) -> list[NewsOut
         return []
 
     async with UnitOfWork() as uow:
-        await uow.lock_table("newsoutlets")
+        await uow.lock_table(NewsOutlet)
 
         newsoutlet_repository = NewsOutletRepository(uow)
         saved_outlets = await newsoutlet_repository.get_all()
@@ -120,7 +120,7 @@ async def remove_existing_outlet(
         return []
 
     async with UnitOfWork() as uow:
-        await uow.lock_table("newsoutlets")
+        await uow.lock_table(NewsOutlet)
 
         newsoutlet_repository = NewsOutletRepository(uow)
         saved_outlets = await newsoutlet_repository.get_all()
